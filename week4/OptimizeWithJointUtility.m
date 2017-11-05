@@ -17,6 +17,9 @@ function [MEU OptimalDecisionRule] = OptimizeWithJointUtility( I )
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %
   % YOUR CODE HERE
+  MEU = 1;
+
+  OptimalDecisionRule = struct('var', [1, 2], 'card', [2, 2], 'val', [1, 2, 3, 4]);
   %
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

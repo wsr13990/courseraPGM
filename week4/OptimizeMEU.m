@@ -24,6 +24,17 @@ function [MEU OptimalDecisionRule] = OptimizeMEU( I )
   %     has no parents.
   % 2.  You may find the Matlab/Octave function setdiff useful.
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
+    DChoices = I.DecisionFactors;
+    DChoices.value = DChoices.value.*0;#Generate choices template
+    if (length(I.DecisionFactors.var)==1)#D has no parent
+      for i=1:I.DecisionFactors.card
+        
+      endfor
+      MEU = 
+    else
+    EUF = CalculateExpectedUtilityFactor(I);
     
+    ;
+
 
 end

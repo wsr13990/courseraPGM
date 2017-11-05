@@ -15,6 +15,11 @@ function EUF = CalculateExpectedUtilityFactor( I )
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %
   % YOUR CODE HERE...
+  R = I.RandomFactors;
+  U = I.UtilityFactors;
+  var = unique([R(:).var, U(:).var]);
+  var = setdiff(var,I.DecisionFactors.var);
+  EUF = VariableElimination([R U],var);
   %
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
 

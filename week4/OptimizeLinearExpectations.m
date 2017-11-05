@@ -24,6 +24,9 @@ function [MEU OptimalDecisionRule] = OptimizeLinearExpectations( I )
   % probability 1 to the best option from the EUF for that joint assignment 
   % to D's parents, and 0 otherwise.  Note that when D has no parents, it is
   % a degenerate case we can handle separately for convenience.
+  MEU = 1;
+
+  OptimalDecisionRule = struct('var', [1, 2], 'card', [2, 2], 'val', [1, 2, 3, 4]);
   %
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
