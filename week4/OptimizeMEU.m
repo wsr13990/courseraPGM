@@ -23,18 +23,23 @@ function [MEU OptimalDecisionRule] = OptimizeMEU( I )
   % 1.  It is probably easiest to think of two cases - D has parents and D 
   %     has no parents.
   % 2.  You may find the Matlab/Octave function setdiff useful.
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
-    DChoices = I.DecisionFactors;
-    DChoices.value = DChoices.value.*0;#Generate choices template
-    if (length(I.DecisionFactors.var)==1)#D has no parent
-      for i=1:I.DecisionFactors.card
-        
-      endfor
-      MEU = 
-    else
-    EUF = CalculateExpectedUtilityFactor(I);
-    
-    ;
-
-
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  R = I.RandomFactors;
+  D = I.DecisionFactors;
+  U = I.UtilityFactors;
+  EU = CalculateExpectedUtilityFactor(I);
+  if (length(I.DecisionFactors.var)==1)#D has no parent
+    MEU = max(EU.val);
+    OptimalDecisionRule = D;
+    OptimalDecisionRule.val = (EU.val == MEU);
+  elseif (length(I.DecisionFactors.var) > 1)#D has parent
+    numOfJointDecisionParent = prod(D.card(2:length(D.card)));
+    OptimalDecisionRule = D;
+    MEU = 0;
+    for i = 0:(length(EU.val)/numOfJointDecisionParent)-1
+      maxEUPerParent = max(EU.val(numOfJointDecisionParent*i+1:(i+1)*numOfJointDecisionParent));
+      MEU = MEU + maxEUPerParent;
+      OptimalDecisionRule.val(numOfJointDecisionParent*i+1:(i+1)*numOfJointDecisionParent) = (EU.val(numOfJointDecisionParent*i+1:(i+1)*numOfJointDecisionParent)== maxEUPerParent);
+    end
+  end
 end
