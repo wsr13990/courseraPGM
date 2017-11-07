@@ -24,22 +24,27 @@ function [MEU OptimalDecisionRule] = OptimizeMEU( I )
   %     has no parents.
   % 2.  You may find the Matlab/Octave function setdiff useful.
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  R = I.RandomFactors;
-  D = I.DecisionFactors;
-  U = I.UtilityFactors;
-  EU = CalculateExpectedUtilityFactor(I);
-  if (length(I.DecisionFactors.var)==1)#D has no parent
-    MEU = max(EU.val);
-    OptimalDecisionRule = D;
-    OptimalDecisionRule.val = (EU.val == MEU);
-  elseif (length(I.DecisionFactors.var) > 1)#D has parent
-    numOfJointDecisionParent = prod(D.card(2:length(D.card)));
-    OptimalDecisionRule = D;
-    MEU = 0;
-    for i = 0:(length(EU.val)/numOfJointDecisionParent)-1
-      maxEUPerParent = max(EU.val(numOfJointDecisionParent*i+1:(i+1)*numOfJointDecisionParent));
-      MEU = MEU + maxEUPerParent;
-      OptimalDecisionRule.val(numOfJointDecisionParent*i+1:(i+1)*numOfJointDecisionParent) = (EU.val(numOfJointDecisionParent*i+1:(i+1)*numOfJointDecisionParent)== maxEUPerParent);
+  EU = CalculateExpectedUtilityFactor(I)
+  #Enumerate decisions & Optimize MEU
+  numberOfParentJoint = prod(D.card(2:length(D.var)));
+  numberOfDecisions = D.card(1)^numberOfParentJoint;
+  assignments = IndexToAssignment(1:numberOfDecisions,D.card(1).*ones(1,numberOfParentJoint));
+  MEU = -inf;
+  OptimalDecisionRule = D;
+  for i=1:length(assignments)
+    assignment = assignments(i,:);
+    decision = [];
+    for j=1:length(assignment)
+      index = assignment(j);
+      template = zeros(1,D.card);
+      template(index)=1;
+      decision = [decision template];
+    end
+    D.val = decision;
+    currentMEU = sum(FactorProduct(EU,D).val);
+    if (currentMEU > MEU)
+      MEU = currentMEU;
+      OptimalDecisionRule = D;
     end
   end
 end

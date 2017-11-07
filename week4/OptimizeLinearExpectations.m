@@ -24,9 +24,42 @@ function [MEU OptimalDecisionRule] = OptimizeLinearExpectations( I )
   % probability 1 to the best option from the EUF for that joint assignment 
   % to D's parents, and 0 otherwise.  Note that when D has no parents, it is
   % a degenerate case we can handle separately for convenience.
-  MEU = 1;
-
-  OptimalDecisionRule = struct('var', [1, 2], 'card', [2, 2], 'val', [1, 2, 3, 4]);
+  expectedUtilities = [];
+  ITemp = I;
+  EU = [];
+  if(length(I.UtilityFactors)==1)
+    [MEU OptimalDecisionRule] = OptimizeMEU(I);
+  elseif(length(I.UtilityFactors)>1)
+    ITemp.UtilityFactors = I.UtilityFactors(1);
+    EU = CalculateExpectedUtilityFactor(ITemp);
+    for i = 2:length(I.UtilityFactors)
+      ITemp.UtilityFactors = I.UtilityFactors(i);
+      EU = FactorSum(EU, CalculateExpectedUtilityFactor(ITemp));
+    end  
+  end
+  #Enumerate decisions & optimize MEU
+  D = I.DecisionFactors(1);
+  numberOfParentJoint = prod(D.card(2:length(D.var)));
+  numberOfDecisions = D.card(1)^numberOfParentJoint;
+  assignments = IndexToAssignment(1:numberOfDecisions,D.card(1).*ones(1,numberOfParentJoint));
+  MEU = -inf;
+  OptimalDecisionRule = D;
+  for i=1:length(assignments)
+    assignment = assignments(i,:);
+    decision = [];
+    for j=1:length(assignment)
+      index = assignment(j);
+      template = zeros(1,D.card);
+      template(index)=1;
+      decision = [decision template];
+    end
+    D.val = decision;
+    currentMEU = sum(FactorProduct(EU,D).val);
+    if (currentMEU > MEU)
+      MEU = currentMEU;
+      OptimalDecisionRule = D;
+    end
+  end
   %
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   

@@ -20,6 +20,15 @@ function EUF = CalculateExpectedUtilityFactor( I )
   var = unique([R(:).var, U(:).var]);
   var = setdiff(var,I.DecisionFactors.var);
   EUF = VariableElimination([R U],var);
+  if(length(R)==1)
+    EUF = VariableElimination([R U],var);
+  elseif (length(R)>1)
+    RTemp = R(1);
+    for i=2:length(R)
+      RTemp = FactorProduct(RTemp,R(i));
+    end
+    EUF = VariableElimination(FactorProduct(RTemp,U),var);
+  end
   %
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
 
